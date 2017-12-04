@@ -151,5 +151,7 @@ confusionMatrix(data = pred.5r, reference = testowe$if_paid_fctr)
 pred.6r <- predict(tree6r, newdata = testowe, type = "class")
 confusionMatrix(data = pred.6r, reference = testowe$if_paid_fctr)
 
+#### koniec
+
 
 
