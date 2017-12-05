@@ -16,11 +16,8 @@ load("KrukPWr2018.Rdata")
 
 #######  Eksploracyjna Analiza Danych ###########
 
+## sprawdz rozmiar ramek danych, wystepowanie NA,s, typy danych dla obiektow 'events' i 'cases'
 
-##summary(cases)
-##glimpse(cases)
-##dim(cases)
-# tak samo dla events
 
 
 ####### Usuniecie brakow danych #################
@@ -29,38 +26,27 @@ load("KrukPWr2018.Rdata")
 
 cases<-as.data.frame(cases)
 ncol(cases)
-for(i in 1:ncol(cases)){
-  med<-median(na.omit(cases[,i]))  
-  cases[is.na(cases[,i]),i]<-med
-} 
+
 
 # po zamianie sprawdz ramke danych poprzez summary
 #summary(cases)
 
 # zaproponuj metode postepowania uzupelnienia brakow danych kategorycznych
 
-cases$Product <- names(which.max(table(cases$Product)))
-cases$Gender <- names(which.max(table(cases$Product)))
 
 
 events <- as.data.frame(events)
 
-summary(events)
-
 # zamien wszytskie wartosci NA na 0 
-
-for(i in 1:ncol(events)){
-  events[is.na(events[,i]),i] <- 0
-} 
 
 # sprawdz podumowanie danych po wykonaniu tej operacji
 
-summary(events)
 
 ##### przekodowanie do factora #################
 
 cases <- cases%>%
-          mutate_if(., is.character, as.factor)
+  mutate_if(., is.character, as.factor)%>%
+  mutate(., Land = as.factor(Land))
 
 
 ####### Definiowanie Y ##########################
@@ -70,33 +56,26 @@ cases <- cases%>%
 #### if paid - czy byla jakoklwiek wplata w ciagu 12M
 
 events <- events %>%
-            group_by(., CaseId)%>%
-            summarise(., if_concluded = sum(NumberOfAgreementConcluded),
-                         if_paid = sum(PaymentAmount)
-                      )
-            # mutate(., if_concluded = ifelse(if_concluded > 0, 1, 0),      # Czy zawarta ugoda 12M
-            #           if_paid = ifelse(if_paid > 0, 1, 0))                # Czy jakakolwiek wplata 12M
+  group_by(., CaseId)%>%
+  summarise(., if_concluded = sum(NumberOfAgreementConcluded),
+            if_paid = sum(PaymentAmount)
+           )
+
+# sprawdz strukture po przeksztalceniu danych
 
 # zamien wartosci w cechach if_concluded i if_paid na wartosc 0 jezeli nie bylo wplaty lub zawartej ugody 
 # lub na 1 w przeciwnym przypadku
 
-events$if_concluded <- ifelse(events$if_concluded > 0, 1, 0)
-events$if_paid <- ifelse(events$if_paid > 0, 1, 0)
 
-
-events$if_concluded_fctr <- as.factor(ifelse(events$if_concluded==0, 'bad', 'good'))
-events$if_paid_fctr <- as.factor(ifelse(events$if_paid==0, 'bad', 'good'))
-
+# zakoduj analogicznie za cechy factorowe 1=='good', 0 == 'bad'
 
 
 ####### Laczenie danych ###########################
 
-raw.data <- inner_join(cases, events)
+  
+# polacz zbiory danych case i events i zachowaj nowy zbior jako raw.data , sprawdz rozmiar ramek 
 
-# zakoduj analogicznie za cechy factorowe 1=='good', 0 == 'bad'
 
-dim(raw.data)
-str(raw.data)
 
 
 ######## Podzial na zbior uczacy i testowy ########
@@ -112,24 +91,9 @@ ind.ucz <- createDataPartition(uczace$if_concluded, times= 1, p=0.7, list=FALSE)
 uczace <- uczace[ind.ucz,]
 testowe <- uczace[-ind.ucz,]
 
-
 ### sprawdz rozmiary ramek 'walidacyjne','uczace,'testowe'
-
-dim(walidacyjne)
-dim(uczace)
-dim(testowe)
-
 ### sprawdz rozklady 'if_concluded' we wszystkich trzech zbiorach
-
-summary(uczace$if_concluded)
-summary(testowe$if_concluded)
-summary(walidacyjne$if_concluded)
-
-### zobacz rwonierz rozklady 'if_paid'
-
-summary(uczace$if_paid)
-summary(testowe$if_paid)
-summary(walidacyjne$if_paid)
+### zobacz rwonierz frakcje 'if_paid'
 
 
 ######## modelowanie ##############################
@@ -153,29 +117,30 @@ pred.2r <- predict(tree2r , newdata = testowe, type = "class")
 
 confusionMatrix(data = pred.2r, reference = testowe$if_paid_fctr)
 
+
 #### wszytskie dostepne cechy
 
 uczace_t <- uczace%>%
-            select(., -if_concluded, -if_concluded_fctr, -if_paid, if_paid_fctr, - CaseId)
+  select(., -if_concluded, -if_concluded_fctr, -if_paid, if_paid_fctr, - CaseId)
+
+### wyswietl tresc pomocy dla funkcji rpart i rpart.control
 
 
 (tree3c <- ctree(if_paid_fctr~., uczace_t, control = ctree_control(minsplit = 1000)))
 (tree4r <- rpart(if_paid_fctr~., uczace_t))
 
 # parametryzacja 
-
 (tree5r <- rpart(if_paid_fctr~., uczace_t, control = rpart.control(cp =0.001, minsplit = 1000)))
 
 # zbuduj drzewo z wybranymi przez Ciebie parametrami
 
-(tree6r <- rpart(if_paid_fctr~., uczace_t, control = rpart.control(cp = 0.001, minsplit = 100)))
 
 ##### prezentacja graficzna 
 
 plot(tree3c)
 rpart.plot(tree4r)
 rpart.plot(tree5r)
-rpart.plot(tree6r)
+
 
 
 ##### macierze klasyfikacji
@@ -190,9 +155,6 @@ pred.5r <- predict(tree5r, newdata = testowe, type = "class")
 confusionMatrix(data = pred.5r, reference = testowe$if_paid_fctr)
 
 ### dodaj macierz klasyfikacji dla zbudowanego przez Ciebie drzewa
-
-pred.6r <- predict(tree6r, newdata = testowe, type = "class")
-confusionMatrix(data = pred.6r, reference = testowe$if_paid_fctr)
 
 #### koniec
 

@@ -3,6 +3,9 @@ library(datasets)
 library(data.table)
 library(party)
 library(caret)
+library(maptree)
+library(rattle)
+
 
 ########################################
 #ZAD 1. Na wbudowanych danych „iris” za pomocą „rpart” zbuduj drzewo klasyfikacyjne szacujące przynależność do gatunku wykorzystując jako predyktory: 
@@ -55,7 +58,7 @@ true1
 
 ##inne przykłady jak ładniej narysować
 library(maptree)
-draw.tree(tree2,cex=0.7,nodeinfo=TRUE)
+draw.tree(tree1,cex=0.7,nodeinfo=TRUE)
 
 library(rattle)
 drawTreeNodes(tree3, col = NULL, nodeinfo = FALSE,decimals = 2,  print.levels = TRUE, new = TRUE) 
@@ -133,7 +136,7 @@ iris2$predict6<-result26
 #ZAD 3. Uzupełnij braki danych w ramce „cases” (możesz wspomóc się przesłanym skryptem z laboratorium numer 4)
 ########################################
 
-load("~/Moje/menago/kursR/KrukUWr2017.Rdata")
+load("KrukUWr2017.Rdata")
 ls()
 summary(cases)
 summary(events)
@@ -148,6 +151,7 @@ for(i in 1:ncol(cases)){
 } 
 
 summary(dane)
+summary(cases)
 
 ########################################
 #ZAD 4. Na bazie ramki danych „events” stwórz następujące zmienne dla wszystkich spraw z ramki „cases” i dodaj je do nowej ramki np. „cases2”
