@@ -14,13 +14,20 @@ library(data.table)
 
 load("KrukPWr2018.Rdata")
 
-#######  Eksploracyjna Analiza Danych ###########
+#######  Eksploracyjna Analiza Danych ##########################################################
+
+############### ćwiczenie #######################
 
 ## sprawdz rozmiar ramek danych, wystepowanie NA,s, typy danych dla obiektow 'events' i 'cases'
 
 
 
-####### Usuniecie brakow danych #################
+
+
+
+####### Usuniecie brakow danych ##############################################################
+
+############### ćwiczenie #######################
 
 #znajdz metoda zastapienia brakow danych mediana
 
@@ -33,13 +40,13 @@ ncol(cases)
 
 # zaproponuj metode postepowania uzupelnienia brakow danych kategorycznych
 
-
-
 events <- as.data.frame(events)
 
 # zamien wszytskie wartosci NA na 0 
 
 # sprawdz podumowanie danych po wykonaniu tej operacji
+
+#################################################
 
 
 ##### przekodowanie do factora #################
@@ -61,18 +68,22 @@ events <- events %>%
             if_paid = sum(PaymentAmount)
            )
 
-# sprawdz strukture po przeksztalceniu danych
 
-# zamien wartosci w cechach if_concluded i if_paid na wartosc 0 jezeli nie bylo wplaty lub zawartej ugody 
-# lub na 1 w przeciwnym przypadku
+############### ćwiczenie #########################
+###### sprawdz strukture po przeksztalceniu danych
+
+## zamien wartosci w cechach if_concluded i if_concludedna wartosc 0 jezeli nie bylo wplaty lub zawartej ugody 
+## lub na 1 w przeciwnym przypadku
 
 
-# zakoduj analogicznie za cechy factorowe 1=='good', 0 == 'bad'
+## zakoduj analogicznie na cechy factorowe 1=='good', 0 == 'bad' i zapisz je jako:
+## if_concluded_fctr i 
+## if_concluded_fctr
 
 
 ####### Laczenie danych ###########################
 
-  
+############### ćwiczenie #########################
 # polacz zbiory danych case i events i zachowaj nowy zbior jako raw.data , sprawdz rozmiar ramek 
 
 
@@ -91,6 +102,8 @@ ind.ucz <- createDataPartition(uczace$if_concluded, times= 1, p=0.7, list=FALSE)
 uczace <- uczace[ind.ucz,]
 testowe <- uczace[-ind.ucz,]
 
+
+############### ćwiczenie #########################
 ### sprawdz rozmiary ramek 'walidacyjne','uczace,'testowe'
 ### sprawdz rozklady 'if_concluded' we wszystkich trzech zbiorach
 ### zobacz rwonierz frakcje 'if_paid'
@@ -123,7 +136,10 @@ confusionMatrix(data = pred.2r, reference = testowe$if_paid_fctr)
 uczace_t <- uczace%>%
   select(., -if_concluded, -if_concluded_fctr, -if_paid, if_paid_fctr, - CaseId)
 
+
+############### ćwiczenie #########################
 ### wyswietl tresc pomocy dla funkcji rpart i rpart.control
+
 
 
 (tree3c <- ctree(if_paid_fctr~., uczace_t, control = ctree_control(minsplit = 1000)))
@@ -132,6 +148,8 @@ uczace_t <- uczace%>%
 # parametryzacja 
 (tree5r <- rpart(if_paid_fctr~., uczace_t, control = rpart.control(cp =0.001, minsplit = 1000)))
 
+
+############### ćwiczenie #########################
 # zbuduj drzewo z wybranymi przez Ciebie parametrami
 
 
@@ -141,6 +159,8 @@ plot(tree3c)
 rpart.plot(tree4r)
 rpart.plot(tree5r)
 
+############### ćwiczenie #########################
+# 'wydrukuj' drzewo z wybranymi przez Ciebie parametrami
 
 
 ##### macierze klasyfikacji
@@ -154,6 +174,8 @@ confusionMatrix(data = pred.4r, reference = testowe$if_paid_fctr)
 pred.5r <- predict(tree5r, newdata = testowe, type = "class")
 confusionMatrix(data = pred.5r, reference = testowe$if_paid_fctr)
 
+
+############### ćwiczenie #########################
 ### dodaj macierz klasyfikacji dla zbudowanego przez Ciebie drzewa
 
 #### koniec
