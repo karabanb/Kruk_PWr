@@ -15,12 +15,14 @@ library(data.table)
 load("KrukPWr2018.Rdata")
 
 #######  Eksploracyjna Analiza Danych ###########
-
+str(uczace)
 
 ##summary(cases)
 ##glimpse(cases)
 ##dim(cases)
 # tak samo dla events
+
+prop.table(table(testowe$if_concluded))
 
 
 ####### Usuniecie brakow danych #################

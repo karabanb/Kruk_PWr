@@ -1,5 +1,5 @@
 
-library(tidyverse)
+library(tidyverse)  
 library(rpart)      
 library(rpart.plot)
 library(partykit)
@@ -26,11 +26,15 @@ load("KrukPWr2018.Rdata")
 ### uzywamy 1 cechy TOA
 set.seed(1234)
 
-tree1c<- ctree(if_paid_fctr~ TOA ,uczace)
+tree1c<- ctree(if_concluded_fctr~ TOA ,uczace)
 
-tree1r <- rpart(if_paid_fctr ~ TOA, uczace)
+tree1r <- rpart(if_concluded_fctr ~ TOA, uczace)
 
-tree2r <- rpart(if_paid_fctr ~ TOA, uczace, control = rpart.control(cp =0.0001), method = "class")
+tree1r
+
+tree2r <- rpart(if_concluded_fctr ~ TOA, uczace, control = rpart.control(cp =0.0001), method = "class")
+
+tree2r
 
 
 ### predyckcja i macierz pomylek
@@ -57,9 +61,10 @@ uczace_t <- uczace%>%
 ############### ćwiczenie #########################
 ### wyswietl tresc pomocy dla funkcji rpart i rpart.control
 
+?rpart
+?rpart.control
 
-
-(tree3c <- ctree(if_paid_fctr~., uczace_t, control = ctree_control(minsplit = 1000)))
+(tree3c <- ctree(if_paid_fctr ~ ., uczace_t, control = ctree_control(minsplit = 1000)))
 (tree4r <- rpart(if_paid_fctr~., uczace_t))
 
 # parametryzacja 
@@ -68,6 +73,7 @@ uczace_t <- uczace%>%
 
 ############### ćwiczenie #########################
 # zbuduj drzewo z wybranymi przez Ciebie parametrami
+
 
 
 ##### prezentacja graficzna 
@@ -140,6 +146,7 @@ dane$Other<-ifelse(is.na(dane$Other),dane$TOA - dane$Principal - dane$Interest ,
 ########################?wiczenie##################################
 (med <- median(dane$D_ContractDateToImportDate, na.rm = TRUE))
 dane$D_ContractDateToImportDate <- ifelse(is.na(dane$D_ContractDateToImportDate), med, dane$D_ContractDateToImportDate)
+
 #zamie? braki danych w zmiennej D_ContractDateToImportDate korzystaj?c z mediany
 ####################################################################
 
@@ -191,7 +198,7 @@ dane$MeanSalary[which(is.na(dane$MeanSalary))]<-2470
 dane$Age<-ifelse(dane$Age==-1,med,dane$Age)
 
 #16. Gender NA moda 
-dane[, .N, by=Gender]
+cases[, .N, by=Gender]
 dane$Gender[which(is.na(dane$Gender))]<-"MALE"
 
 #17. LastPaymentAmount NA mediana, s? te? 0
@@ -228,6 +235,7 @@ dane$ProductCashLoan<-ifelse(dane$Product=="Cash loan",1,0)
 ##Land n-1 zmiennych dummy
 
 
+library(psych)
 (land_D <- dummy.code(dane$Land))
 
 #ta sama kolejnosc wierszy
@@ -244,7 +252,7 @@ names(dane)
 
 ############## KORELACJE ##################
 load("splitted.Rdata")
-
+library(corrplot)
 str(dane)
 kor <- cor(dane[,-c(1,7,13,16)])
 kor_all <- cor(dane_all[,-c(1,7,13,16)])
@@ -308,6 +316,7 @@ summary(pred)
 
 
 summary(residuals(model1))# residuals
+
 
 
 layout(matrix(c(1,2,3,4),2,2)) # 
