@@ -104,9 +104,12 @@ testowe <- uczace[-ind.ucz,]
 
 
 ############### ćwiczenie #########################
+
 ### sprawdz rozmiary ramek 'walidacyjne','uczace,'testowe'
+
 ### sprawdz rozklady 'if_concluded' we wszystkich trzech zbiorach
-### zobacz rwonierz frakcje 'if_paid'
+
+### zobacz rownierz frakcje 'if_paid'
 
 
 ######## modelowanie ##############################
@@ -126,9 +129,8 @@ pred.1c <- predict(treey1c, newdata = testowe, type = "response")
 
 confusionMatrix(data = pred.1c, reference = testowe$if_paid_fctr)
 
-pred.2r <- predict(tree2r , newdata = testowe, type = "class")
+#### ćwiczenie : utworz macierze pomylek modelu 'tree2r'  dla zbiorow 'uczacy' i 'testowy'
 
-confusionMatrix(data = pred.2r, reference = testowe$if_paid_fctr)
 
 
 #### wszytskie dostepne cechy
@@ -142,15 +144,15 @@ uczace_t <- uczace%>%
 
 
 
-(tree3c <- ctree(if_paid_fctr~., uczace_t, control = ctree_control(minsplit = 1000)))
-(tree4r <- rpart(if_paid_fctr~., uczace_t))
+tree3c <- ctree(if_paid_fctr~., uczace_t, control = ctree_control(minsplit = 1000))
+tree4r <- rpart(if_paid_fctr~., uczace_t)
 
 # parametryzacja 
-(tree5r <- rpart(if_paid_fctr~., uczace_t, control = rpart.control(cp =0.001, minsplit = 1000)))
+tree5r <- rpart(if_paid_fctr~., uczace_t, control = rpart.control(cp =0.001, minsplit = 1000))
 
 
 ############### ćwiczenie #########################
-# zbuduj drzewo z wybranymi przez Ciebie parametrami
+# zbuduj kilka drzew metoda rpart z wybranymi przez Ciebie parametrami (max 3)
 
 
 ##### prezentacja graficzna 
@@ -176,8 +178,11 @@ confusionMatrix(data = pred.5r, reference = testowe$if_paid_fctr)
 
 
 ############### ćwiczenie #########################
-### dodaj macierz klasyfikacji dla zbudowanego przez Ciebie drzewa
 
-#### koniec
+### dodaj macierz klasyfikacji dla zbudowanych przez Ciebie drzew
+
+### porownaj wybrany przez Ciebie model drzewa z modelem regresji
+
+
 
 

@@ -55,7 +55,7 @@ summary(events)
 # zamien wszytskie wartosci NA na 0 
 
 for(i in 1:ncol(events)){
-  events[is.na(events[,i]),i] <- -1
+  events[is.na(events[,i]),i] <- 0
 } 
 
 # sprawdz podumowanie danych po wykonaniu tej operacji
@@ -98,7 +98,7 @@ events$if_paid_fctr <- as.factor(ifelse(events$if_paid==0, 'bad', 'good'))
 
 raw.data <- inner_join(cases, events)
 
-save(raw.data, file="raw.data.Rdata")
+#save(raw.data, file="raw.data.Rdata")
 
 # zakoduj analogicznie za cechy factorowe 1=='good', 0 == 'bad'
 
@@ -109,7 +109,7 @@ str(raw.data)
 ######## Podzial na zbior uczacy i testowy ########
 
 set.seed(1234)
-ind.ucz<-createDataPartition(raw.data$if_concluded, times= 1, p=0.7, list=FALSE)
+ind.ucz<-createDataPartition(raw.data$if_concluded, p=0.7, list=FALSE)
 
 walidacyjne <- raw.data[-ind.ucz, ] 
 uczace <- raw.data[ind.ucz, ]
@@ -125,8 +125,11 @@ testowe <- uczace[-ind.ucz,]
 dim(walidacyjne)
 dim(uczace)
 dim(testowe)
+dim(cases)
+dim(events)
+#save(uczace, walidacyjne, testowe, cases, events, file = "KrukPWr2018.Rdata")
 
-### sprawdz rozklady 'if_concluded' we wszystkich trzech zbiorach
+  ### sprawdz rozklady 'if_concluded' we wszystkich trzech zbiorach
 
 summary(uczace$if_concluded)
 summary(testowe$if_concluded)
