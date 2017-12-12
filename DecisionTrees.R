@@ -27,6 +27,10 @@ load("KrukPWr2018.Rdata")
 
 #znajdz metoda zastapienia brakow danych mediana
 
+# land to factor i nie mozna mediana
+
+cases[is.na(cases$Land), "Land"] <- 0 
+
 cases<-as.data.frame(cases)
 ncol(cases)
 for(i in 1:ncol(cases)){
@@ -39,8 +43,9 @@ for(i in 1:ncol(cases)){
 
 # zaproponuj metode postepowania uzupelnienia brakow danych kategorycznych
 
-cases$Product <- names(which.max(table(cases$Product)))
-cases$Gender <- names(which.max(table(cases$Product)))
+cases[is.na(cases$Product), "Product"] <- names(which.max(table(cases$Product)))
+cases[is.na(cases$Gender), "Gender"] <- names(which.max(table(cases$Gender)))
+cases$Land <- as.factor(cases$Land)
 
 
 events <- as.data.frame(events)
@@ -50,7 +55,7 @@ summary(events)
 # zamien wszytskie wartosci NA na 0 
 
 for(i in 1:ncol(events)){
-  events[is.na(events[,i]),i] <- 0
+  events[is.na(events[,i]),i] <- -1
 } 
 
 # sprawdz podumowanie danych po wykonaniu tej operacji
@@ -92,6 +97,8 @@ events$if_paid_fctr <- as.factor(ifelse(events$if_paid==0, 'bad', 'good'))
 ####### Laczenie danych ###########################
 
 raw.data <- inner_join(cases, events)
+
+save(raw.data, file="raw.data.Rdata")
 
 # zakoduj analogicznie za cechy factorowe 1=='good', 0 == 'bad'
 
